@@ -1,0 +1,15 @@
+{
+  "name": "bob-payload-processor",
+  "version": "0.0.1",
+  "description": "BOB payload decoder",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "EOLANE",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^4.17.15"
+  }
+}

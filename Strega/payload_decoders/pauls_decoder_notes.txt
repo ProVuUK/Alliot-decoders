@@ -1,0 +1,61 @@
+uplink type:
+
+var ul_type = "unknown"
+
+if (bytes[5] === 0x23) { ul_type = "periodical"; }
+else if (bytes[5] === 0x40) { ul_type = "ack"; } 
+
+
+power source:
+
+var power = (bytes[0] & 0x40) ? "ext" : "batt";
+
+lorawan class:
+
+var class = (bytes[0] & 0x80) ? "C" : "A";
+
+battery voltage (only if source is batt):
+
+parseInt(String.fromCharCode.apply(null, bytes.slice(0, 4)))/1000
+
+fraud:
+
+Boolean(bytes[4] & 0x40)
+
+leak:
+
+Boolean(bytes[4] & 0x20)
+
+digital in 1:
+
+Boolean(bytes[4] & 0x10)
+
+digital in 0:
+
+Boolean(bytes[4] & 0x08)
+
+cable connected:
+
+Boolean(bytes[4] & 0x04)
+
+tamper (lid open):
+
+Boolean(bytes[4] & 0x02)
+
+valve open:
+
+Boolean(bytes[4] & 0x01)
+
+if ul_type is "periodic" can get temp/hum:
+
+temperature:
+
+((((bytes[6] << 24 >> 16) + bytes[7])/65536) * 165) - 40
+
+humidity:
+
+(((bytes[8] << 8) + bytes[9])/65536) * 100
+
+
+
+

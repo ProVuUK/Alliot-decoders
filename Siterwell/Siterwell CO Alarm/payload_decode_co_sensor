@@ -1,0 +1,18 @@
+01 - protocol version
+03 - sensor type. 0x03 = CO
+02 - device model. 0x02 = GS816A-H01
+01 - software version
+01 - hardware version
+01 - device status. bit0 = heartbeat, bit1 = key test, bit4 = low batt, bit5 = end of life. 
+00 - reserved
+00 - sensor status. bit4=sensor fault, bit5=CO alarm mute, bit6=CO alarm.
+00 - reserved
+00 - reserved
+64 - battery percentage
+00 - low byte ppm value
+00 - high byte ppm value
+00 - reserved
+00 - reserved
+00 - reserved
+00 - reserved
+6d - check value. 

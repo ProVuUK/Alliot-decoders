@@ -1,0 +1,12 @@
+01 00e4 - temp
+02 30 - humid
+03 0071 - lux
+04 03de - pressure
+05 0080 - IAQ
+12 401815cf - BVOC
+3f 44a02440 - CO2e
+06 c8 - O2
+08 038d - CO2
+0b 0005 - PM2.5
+0c 0006 - PM10
+
