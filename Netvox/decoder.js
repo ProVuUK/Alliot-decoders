@@ -198,6 +198,12 @@ function Decoder(bytes, fport) {
 			decoded.devicetype = "R718B";
 			decoded.battery = bytes[3] / 10;
 			decoded.temperature = ((bytes[4] << 24 >> 16) + bytes[5]) / 10;
+		} else if ((bytes[1] === 0xB1) && (bytes[2] === 0x01)) { // device type 177 (R718PE)
+			decoded.devicetype = "R718PE";
+			decoded.battery = bytes[3] / 10;
+			decoded.status1 = bytes[4];
+			decoded.distance = (bytes[5] << 8) + bytes[6];
+			decoded.filllevel = bytes[7];
 		}
 	} else if (fport === 7) { // then its a ConfigureCmd response
 		if ((bytes[0] === 0x82) && (bytes[1] === 0x01)) { // R711 or R712
