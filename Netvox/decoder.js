@@ -210,7 +210,13 @@ function Decoder(bytes, fport) {
             decoded.temperature = ((bytes[4] << 8) | bytes[5]) / 100;
             decoded.humidity = ((bytes[6] << 8) | bytes[7]) / 100;
             decoded.co2 = ((bytes[8] << 8) | bytes[9]);
-        } 
+       } else if ((bytes[1] === 0x57) && (bytes[2] === 0x07)) { // device type 57 (R718PA7)\
+            decoded.devicetype = "R718PA7";
+            decoded.battery = bytes[3] / 10;
+            decoded.co2 = ((bytes[4] << 8) | bytes[5]) / 10;
+            decoded.nh3 = ((bytes[6] << 8) | bytes[7]) / 10;
+            decoded.noise = ((bytes[8] << 8) | bytes[9]) / 10;
+       }
 	} else if (fport === 7) { // then its a ConfigureCmd response
 		if ((bytes[0] === 0x82) && (bytes[1] === 0x01)) { // R711 or R712
 			decoded.mintime = ((bytes[2] << 8) + bytes[3]);
