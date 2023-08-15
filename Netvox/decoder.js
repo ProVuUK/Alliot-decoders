@@ -204,7 +204,13 @@ function Decoder(bytes, fport) {
 			decoded.status1 = bytes[4];
 			decoded.distance = (bytes[5] << 8) + bytes[6];
 			decoded.filllevel = bytes[7];
-		}
+		} else if ((bytes[1] === 0xBB) && (bytes[2] === 0x01)) { // device type BB (R718UBB)
+            decoded.devicetype = "R718UBB";
+            decoded.battery = bytes[3] / 10;
+            decoded.temperature = ((bytes[4] << 8) | bytes[5]) / 100;
+            decoded.humidity = ((bytes[6] << 8) | bytes[7]) / 100;
+            decoded.co2 = ((bytes[8] << 8) | bytes[9]);
+        } 
 	} else if (fport === 7) { // then its a ConfigureCmd response
 		if ((bytes[0] === 0x82) && (bytes[1] === 0x01)) { // R711 or R712
 			decoded.mintime = ((bytes[2] << 8) + bytes[3]);
