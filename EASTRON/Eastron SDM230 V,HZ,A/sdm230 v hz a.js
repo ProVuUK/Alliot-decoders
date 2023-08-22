@@ -17,6 +17,7 @@ function bytes2float(byte0, byte1, byte2, byte3) {
     return f;
 }
 
+// TTNv2
 function Decoder(bytes, port) {
     var measurement_array = [];
     var tags = {};
@@ -38,6 +39,18 @@ function Decoder(bytes, port) {
     return measurement_array;
 }
 
+// Chirpstack V3                                                                                                                                                                                                   function Decode(fPort, bytes) {
+    return Decoder(bytes, fPort);
+}
+
+// Chirpstack V4 or TTNv3                                                                                                                                                                                         
+function decodeUplink(input) {
+    return {
+        data: Decoder(input.bytes, input.fPort)
+    };
+}
+
+// NodeJS CLI
 try {
     console.log(Decoder(Buffer.from(process.argv[2], 'hex'), 1));
     process.exit();
@@ -45,6 +58,7 @@ try {
     console.log(err);
 }
 
+// NodeRed
 try {
     var tempPayload = Decoder(Buffer.from(msg.payload.payload, 'hex'), msg.payload.fPort);
     //tempPayload[0].tags.devEUI = msg.payload.endDevice.devEui;
