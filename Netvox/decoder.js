@@ -90,6 +90,24 @@ function Decoder(bytes, fport) {
 			decoded.battery = bytes[3] / 10;
 			decoded.multiplier2 = bytes[4];
 			decoded.multiplier3 = bytes[5];
+		} else if ((bytes[1] === 0x4A) && (bytes[2] === 0x03)) { // device type 4A (R718N3) and report type 03
+			decoded.devicetype = "R718N3-3";
+			// full data is in one uplink message
+			decoded.battery = bytes[3] / 10;
+			decoded.currentma1 = ((bytes[4] << 8) + bytes[5]);
+			decoded.currentma2 = ((bytes[6] << 8) + bytes[7]);
+			decoded.currentma3 = ((bytes[8] << 8) + bytes[9]);
+			multipliermap = {
+				"00": 1,
+				"01": 5,
+				"10": 10,
+				"11": 100
+			};
+			multipliers = (bytes[10] + 0xc0).toString(2).match(/.{1,2}/g);
+			// 0 is reserved
+			decoded.multiplier1 = multipliermap[multipliers[1]];
+			decoded.multiplier2 = multipliermap[multipliers[2]];
+			decoded.multiplier3 = multipliermap[multipliers[3]];
 		} else if ((bytes[1] === 0x1C) && (bytes[2] === 0x01)) { // device type 1C (R718E) and report type 01
 			decoded.devicetype = "R718E-1";
 			// full data is split over two separate uplink messages
@@ -160,10 +178,10 @@ function Decoder(bytes, fport) {
 			decoded.devicetype = "RA0708";
 			decoded.battery = bytes[3] / 10;
 			if (bytes[4] != 0xFF && bytes[5] != 0xFF) {
-				decoded.ph = ((bytes[4] << 8) | bytes[5])/100;
+				decoded.ph = ((bytes[4] << 8) | bytes[5]) / 100;
 			}
 			if (bytes[6] != 0xFF && bytes[7] != 0xFF) {
-				decoded.temperature = ((bytes[6] << 8) | bytes[7])/100;
+				decoded.temperature = ((bytes[6] << 8) | bytes[7]) / 100;
 			}
 			if (bytes[8] != 0xFF && bytes[9] != 0xFF) {
 				decoded.orp = (bytes[8] << 8) | bytes[9];
@@ -172,20 +190,20 @@ function Decoder(bytes, fport) {
 			decoded.devicetype = "RA0710";
 			decoded.battery = bytes[3] / 10;
 			if (bytes[4] != 0xFF && bytes[5] != 0xFF) {
-				decoded.ntu = ((bytes[4] << 8) | bytes[5])/10;
+				decoded.ntu = ((bytes[4] << 8) | bytes[5]) / 10;
 			}
 			if (bytes[6] != 0xFF && bytes[7] != 0xFF) {
-				decoded.temperature = ((bytes[6] << 8) | bytes[7])/100;
+				decoded.temperature = ((bytes[6] << 8) | bytes[7]) / 100;
 			}
 			if (bytes[8] != 0xFF && bytes[9] != 0xFF) {
-				decoded.soilhumidity = ((bytes[8] << 8) | bytes[9])/100;
+				decoded.soilhumidity = ((bytes[8] << 8) | bytes[9]) / 100;
 			}
 		} else if ((bytes[1] === 0x5A) && (bytes[2] === 0x01)) { // device type 5A (R311WA/R313WA)
 			decoded.devicetype = "R311WA";
 			decoded.battery = bytes[3] / 10;
 			decoded.status1 = bytes[4];
 			decoded.status2 = bytes[5];
-	  	} else if ((bytes[1] === 0x22) && (bytes[2] === 0x01)) { // device type 22 (R718KA)
+		} else if ((bytes[1] === 0x22) && (bytes[2] === 0x01)) { // device type 22 (R718KA)
 			decoded.devicetype = "R718KA";
 			decoded.battery = bytes[3] / 10;
 			decoded.current = bytes[4];
@@ -205,18 +223,18 @@ function Decoder(bytes, fport) {
 			decoded.distance = (bytes[5] << 8) + bytes[6];
 			decoded.filllevel = bytes[7];
 		} else if ((bytes[1] === 0xBB) && (bytes[2] === 0x01)) { // device type BB (R718UBB)
-            		decoded.devicetype = "R718UBB";
-            		decoded.battery = bytes[3] / 10;
-            		decoded.temperature = ((bytes[4] << 8) | bytes[5]) / 100;
-            		decoded.humidity = ((bytes[6] << 8) | bytes[7]) / 100;
-            		decoded.co2 = ((bytes[8] << 8) | bytes[9]);
-       		} else if ((bytes[1] === 0x57) && (bytes[2] === 0x07)) { // device type 57 (R718PA7)\
-            		decoded.devicetype = "R718PA7";
-            		decoded.battery = bytes[3] / 10;
-            		decoded.co2 = ((bytes[4] << 8) | bytes[5]) / 10;
-            		decoded.nh3 = ((bytes[6] << 8) | bytes[7]) / 10;
-            		decoded.noise = ((bytes[8] << 8) | bytes[9]) / 10;
-       		}
+			decoded.devicetype = "R718UBB";
+			decoded.battery = bytes[3] / 10;
+			decoded.temperature = ((bytes[4] << 8) | bytes[5]) / 100;
+			decoded.humidity = ((bytes[6] << 8) | bytes[7]) / 100;
+			decoded.co2 = ((bytes[8] << 8) | bytes[9]);
+		} else if ((bytes[1] === 0x57) && (bytes[2] === 0x07)) { // device type 57 (R718PA7)\
+			decoded.devicetype = "R718PA7";
+			decoded.battery = bytes[3] / 10;
+			decoded.co2 = ((bytes[4] << 8) | bytes[5]) / 10;
+			decoded.nh3 = ((bytes[6] << 8) | bytes[7]) / 10;
+			decoded.noise = ((bytes[8] << 8) | bytes[9]) / 10;
+		}
 	} else if (fport === 7) { // then its a ConfigureCmd response
 		if ((bytes[0] === 0x82) && (bytes[1] === 0x01)) { // R711 or R712
 			decoded.mintime = ((bytes[2] << 8) + bytes[3]);
@@ -244,20 +262,20 @@ function bcdtonumber(bytes) {
 }
 
 function bytestofloat16(bytes) {
-    var sign = (bytes & 0x8000) ? -1 : 1;
-    var exponent = ((bytes >> 7) & 0xFF) - 127;
-    var significand = (bytes & ~(-1 << 7));
+	var sign = (bytes & 0x8000) ? -1 : 1;
+	var exponent = ((bytes >> 7) & 0xFF) - 127;
+	var significand = (bytes & ~(-1 << 7));
 
-    if (exponent == 128) 
-        return 0.0;
+	if (exponent == 128)
+		return 0.0;
 
-    if (exponent == -127) {
-        if (significand == 0) return sign * 0.0;
-        exponent = -126;
-        significand /= (1 << 6);
-    } else significand = (significand | (1 << 7)) / (1 << 7);
+	if (exponent == -127) {
+		if (significand == 0) return sign * 0.0;
+		exponent = -126;
+		significand /= (1 << 6);
+	} else significand = (significand | (1 << 7)) / (1 << 7);
 
-    return sign * significand * Math.pow(2, exponent);
+	return sign * significand * Math.pow(2, exponent);
 }
 
 // Chirpstack decoder wrapper
@@ -267,17 +285,17 @@ function Decode(fPort, bytes) {
 
 // Direct node.js CLU wrapper (payload bytestring as argument)
 try {
-    console.log(Decoder(Buffer.from(process.argv[2], 'hex'), 6));
-} catch(err) {}
+	console.log(Decoder(Buffer.from(process.argv[2], 'hex'), 6));
+} catch (err) { }
 
 try {
-    var tempPayload = Decoder(Buffer.from(msg.payload.payload, 'hex'), msg.payload.fPort);
-    msg.payload = [{
-        measurement: tempPayload.devicetype,
-        fields: tempPayload,
-        tags: {"devEUI": msg.payload.endDevice.devEui}
-    }];
-    return msg;
-} catch(err) {
-    msg.payload = err;
+	var tempPayload = Decoder(Buffer.from(msg.payload.payload, 'hex'), msg.payload.fPort);
+	msg.payload = [{
+		measurement: tempPayload.devicetype,
+		fields: tempPayload,
+		tags: { "devEUI": msg.payload.endDevice.devEui }
+	}];
+	return msg;
+} catch (err) {
+	msg.payload = err;
 }
