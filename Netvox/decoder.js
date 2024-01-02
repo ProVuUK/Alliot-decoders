@@ -28,6 +28,10 @@ function Decoder(bytes, fport) {
 			decoded.battery = bytes[3] / 10;
 			decoded.leakone = bytes[4];
 			decoded.leaktwo = bytes[5];
+    } else if ((bytes[1] === 0x10) && (bytes[2] === 0x01)) { // device type 10 (RB02I)
+      decoded.devicetype = "RB02I";
+      decoded.battery = bytes[3] / 10;
+      decoded.alarm = bytes[4];
 		} else if ((bytes[1] === 0x13) && (bytes[2] === 0x01)) { // device type 13 (R718AB)
 			decoded.devicetype = "R718AB";
 			decoded.battery = bytes[3] / 10;
@@ -76,6 +80,10 @@ function Decoder(bytes, fport) {
 			decoded.currentma = ((bytes[4] << 8) + bytes[5]);
 			decoded.multiplier = bytes[6];
 			decoded.realcurrentma = decoded.currentma * decoded.multiplier;
+    } else if ((bytes[1] === 0x55) && (bytes[2] === 0x01)) { // device type 55 (R313M)
+      decoded.devicetype = "R313M";
+      decoded.battery = bytes[3] / 10;
+      decoded.onoff = bytes[4];
 		} else if ((bytes[1] === 0x4A) && (bytes[2] === 0x01)) { // device type 4A (R718N3) and report type 01
 			decoded.devicetype = "R718N3-1";
 			// full data is split over two separate uplink messages
