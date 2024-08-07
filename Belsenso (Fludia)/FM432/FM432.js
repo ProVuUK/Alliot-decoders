@@ -28,7 +28,7 @@ function Decoder(payload, fport, timestamp) {
                 var stepInMillis = step * 60 * 1000;
                 for(var i = 0; i < listIncrement.length; i++) {
                     increment = listIncrement[i];
-                    currentTime = new Date((timestamp + stepInMillis * (i + 1)) - 3600000);
+                    currentTime = new Date((timestamp.getTime() + stepInMillis * (i + 1)) - 3600000);
                     listPower[i] = {"Timestamp": currentTime, "Pulses": Math.round(increment*n).toFixed(2), "Meter": meterVersion};
                 }
                 decoded = listPower;
